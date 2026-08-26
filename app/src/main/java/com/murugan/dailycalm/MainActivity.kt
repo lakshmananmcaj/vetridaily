@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.murugan.dailycalm.reminder.ReminderPreferences
 import com.murugan.dailycalm.reminder.ReminderScheduler
+import com.murugan.dailycalm.share.ShareUtils
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.murugan.dailycalm.ui.main.MainUiState
 import com.murugan.dailycalm.ui.main.MainViewModel
@@ -208,8 +209,13 @@ class MainActivity : ComponentActivity() {
                                             if (canGoNext) {
                                                 mainViewModel.loadNextDay()
                                             } else {
+                                                val lockMessage = if (uiState is MainUiState.JourneyComplete) {
+                                                    "You have reached the latest published day."
+                                                } else {
+                                                    "This day unlocks tomorrow."
+                                                }
                                                 scope.launch {
-                                                    snackbarHostState.showSnackbar("This day unlocks tomorrow.")
+                                                    snackbarHostState.showSnackbar(lockMessage)
                                                 }
                                             }
                                         },
@@ -343,6 +349,24 @@ class MainActivity : ComponentActivity() {
                                             )
                                         }
 
+                                        is MainUiState.JourneyComplete -> {
+                                            Text(
+                                                text = "Journey complete",
+                                                style = MaterialTheme.typography.headlineSmall
+                                            )
+                                            Spacer(modifier = Modifier.height(10.dp))
+                                            Text(
+                                                text = "You have finished all ${state.lastDay} days of VetriDaily. New days appear here as they are published.",
+                                                style = MaterialTheme.typography.bodyLarge
+                                            )
+                                            Spacer(modifier = Modifier.height(12.dp))
+                                            OutlinedButton(
+                                                onClick = { mainViewModel.loadPreviousDay() }
+                                            ) {
+                                                Text("Revisit Day ${state.lastDay}")
+                                            }
+                                        }
+
                                         is MainUiState.Error -> {
                                             Text(
                                                 text = "Unable to load content",
@@ -451,6 +475,67 @@ class MainActivity : ComponentActivity() {
                                 )
                             ) {
                                 Text("Replay")
+                            }
+
+                            if (uiState is MainUiState.Success) {
+                                val content = (uiState as MainUiState.Success).content
+                                ElevatedCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.elevatedCardColors(
+                                        containerColor = Color(0x1FFFFFFF)
+                                    ),
+                                    shape = RoundedCornerShape(18.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(14.dp),
+                                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        Text(
+                                            text = "Share & spread the blessing",
+                                            color = Color(0xFFF2FAFF),
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                        Button(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            onClick = {
+                                                ShareUtils.shareToWhatsApp(
+                                                    context, content.title, content.body
+                                                )
+                                            },
+                                            shape = RoundedCornerShape(12.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color(0xFF25D366),
+                                                contentColor = Color(0xFF06310F)
+                                            )
+                                        ) {
+                                            Text("Share to WhatsApp / Status")
+                                        }
+                                        OutlinedButton(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            onClick = {
+                                                ShareUtils.shareCard(
+                                                    context, content.title, content.body
+                                                )
+                                            },
+                                            shape = RoundedCornerShape(12.dp),
+                                            colors = ButtonDefaults.outlinedButtonColors(
+                                                contentColor = Color(0xFFE7F4FF)
+                                            )
+                                        ) {
+                                            Text("Share as Image")
+                                        }
+                                        OutlinedButton(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            onClick = { ShareUtils.sendToFriend(context, content.title) },
+                                            shape = RoundedCornerShape(12.dp),
+                                            colors = ButtonDefaults.outlinedButtonColors(
+                                                contentColor = Color(0xFFE7F4FF)
+                                            )
+                                        ) {
+                                            Text("Send App to a Friend")
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

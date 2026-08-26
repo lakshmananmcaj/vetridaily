@@ -28,6 +28,17 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg
 
+      - name: Import new days from the content plan
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SMT_API_URL: ${{ secrets.SMT_API_URL }}
+          SMT_EMAIL: ${{ secrets.SMT_EMAIL }}
+          SMT_PASSWORD: ${{ secrets.SMT_PASSWORD }}
+        # A bridge outage must not stop already-pending days from being voiced.
+        continue-on-error: true
+        run: python scripts/import_content_plan.py
+
       - name: Publish next pending audio
         env:
           ELEVEN_API_KEY: ${{ secrets.ELEVEN_API_KEY }}
