@@ -1,0 +1,590 @@
+<title>VetriDaily Growth Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Tamil:wght@500;600;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+  /* ---------- tokens: light is the base, complete on bare :root ---------- */
+  :root {
+    --ground:      #F1F5F4;
+    --surface:     #FFFFFF;
+    --surface-alt: #E7EEEC;
+    --ink:         #16211F;
+    --ink-soft:    #46574F;
+    --ink-mute:    #6B7B76;
+    --rule:        #D2DEDB;
+    --rule-soft:   #E3EAE8;
+
+    --vermilion:   #B7331B;   /* sindoor - the one loud colour */
+    --peacock:     #0E6E6B;   /* Murugan's vahana */
+    --saffron:     #B26A12;   /* kavadi */
+
+    --chip-ink:    #FFFFFF;
+    --shadow:      0 1px 2px rgba(22,33,31,.06), 0 8px 24px -16px rgba(22,33,31,.28);
+
+    --measure: 68ch;
+    --step--1: clamp(.78rem, .76rem + .1vw, .84rem);
+    --step-0:  clamp(1rem, .97rem + .16vw, 1.09rem);
+    --step-1:  clamp(1.2rem, 1.13rem + .35vw, 1.42rem);
+    --step-2:  clamp(1.5rem, 1.36rem + .68vw, 2rem);
+    --step-3:  clamp(2rem, 1.7rem + 1.5vw, 3.1rem);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #0C1413;
+      --surface:     #141F1D;
+      --surface-alt: #1B2825;
+      --ink:         #E7EFEC;
+      --ink-soft:    #B3C3BE;
+      --ink-mute:    #849791;
+      --rule:        #273633;
+      --rule-soft:   #1E2C29;
+
+      --vermilion:   #EE6647;
+      --peacock:     #3FB3AB;
+      --saffron:     #E9A340;
+
+      --chip-ink:    #0C1413;
+      --shadow:      0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:      #0C1413;
+    --surface:     #141F1D;
+    --surface-alt: #1B2825;
+    --ink:         #E7EFEC;
+    --ink-soft:    #B3C3BE;
+    --ink-mute:    #849791;
+    --rule:        #273633;
+    --rule-soft:   #1E2C29;
+
+    --vermilion:   #EE6647;
+    --peacock:     #3FB3AB;
+    --saffron:     #E9A340;
+
+    --chip-ink:    #0C1413;
+    --shadow:      0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    font-size: var(--step-0);
+    line-height: 1.65;
+    margin: 0;
+    padding: 0 1.25rem 6rem;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 74ch; margin: 0 auto; }
+
+  h1, h2, h3, .display {
+    font-family: "Anek Tamil", "Segoe UI", system-ui, sans-serif;
+    text-wrap: balance;
+    line-height: 1.12;
+    margin: 0;
+  }
+
+  .label {
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-size: var(--step--1);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+
+  /* ---------- masthead ---------- */
+  header.mast {
+    display: flex; flex-direction: column; gap: 1.1rem;
+    padding: 4.5rem 0 2rem;
+    border-bottom: 2px solid var(--ink);
+  }
+  .vel { display: flex; align-items: center; gap: .7rem; }
+  .vel svg { flex: none; }
+  h1 { font-size: var(--step-3); font-weight: 800; letter-spacing: -.02em; }
+  .thesis {
+    font-size: var(--step-1);
+    color: var(--ink-soft);
+    max-width: var(--measure);
+    margin: 0;
+  }
+  .thesis b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- sections ---------- */
+  section { padding-top: 3.5rem; }
+  .sec-head { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.5rem; }
+  h2 { font-size: var(--step-2); font-weight: 800; letter-spacing: -.015em; }
+  h2 .n { color: var(--vermilion); font-variant-numeric: tabular-nums; }
+  .lede { color: var(--ink-soft); max-width: var(--measure); margin: 0; }
+
+  p { max-width: var(--measure); }
+
+  /* ---------- inventory ---------- */
+  .inv { display: grid; gap: .55rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+  .inv-item {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--peacock);
+    border-radius: 2px;
+    padding: .8rem .95rem;
+    display: flex; flex-direction: column; gap: .2rem;
+  }
+  .inv-item .k {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: var(--step--1); font-weight: 600; color: var(--ink);
+  }
+  .inv-item .v { font-size: var(--step--1); color: var(--ink-mute); line-height: 1.45; }
+
+  /* ---------- idea cards ---------- */
+  .ideas { display: flex; flex-direction: column; gap: 1.4rem; }
+  .idea {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .idea > .body { padding: 1.25rem 1.35rem 1.35rem; display: flex; flex-direction: column; gap: .8rem; }
+  .idea-top { display: flex; gap: .85rem; align-items: baseline; }
+  .idea-num {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--step-1); font-weight: 600;
+    color: var(--vermilion);
+    font-variant-numeric: tabular-nums;
+    flex: none; line-height: 1.1;
+  }
+  h3 { font-size: var(--step-1); font-weight: 600; letter-spacing: -.01em; }
+  .idea p { margin: 0; max-width: none; }
+  .idea .why { color: var(--ink-soft); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .72rem; letter-spacing: .04em; text-transform: uppercase;
+    padding: .25rem .5rem; border-radius: 2px;
+    border: 1px solid var(--rule); color: var(--ink-mute);
+    white-space: nowrap;
+  }
+  .chip.hot   { background: var(--vermilion); color: var(--chip-ink); border-color: transparent; font-weight: 600; }
+  .chip.warm  { background: var(--saffron);   color: var(--chip-ink); border-color: transparent; font-weight: 600; }
+  .chip.cool  { background: var(--peacock);   color: var(--chip-ink); border-color: transparent; font-weight: 600; }
+
+  .build {
+    background: var(--surface-alt);
+    border-top: 1px solid var(--rule-soft);
+    padding: .85rem 1.35rem 1rem;
+    display: flex; flex-direction: column; gap: .35rem;
+  }
+  .build ul { margin: 0; padding-left: 1.1rem; }
+  .build li { font-size: var(--step--1); color: var(--ink-soft); line-height: 1.55; }
+  code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .85em;
+    background: var(--ground);
+    border: 1px solid var(--rule-soft);
+    border-radius: 2px;
+    padding: .06em .35em;
+    color: var(--ink);
+    word-break: break-word;
+  }
+
+  /* ---------- tables ---------- */
+  .scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 3px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: var(--step--1); }
+  th, td { text-align: left; padding: .6rem .8rem; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+  th {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-mute); background: var(--surface-alt); white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td code { white-space: nowrap; }
+
+  /* ---------- callout ---------- */
+  .note {
+    border-left: 3px solid var(--saffron);
+    background: var(--surface);
+    border-top: 1px solid var(--rule); border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    padding: .9rem 1.1rem; border-radius: 0 3px 3px 0;
+    display: flex; flex-direction: column; gap: .4rem;
+  }
+  .note p { margin: 0; font-size: var(--step--1); color: var(--ink-soft); max-width: none; }
+  .note .label { color: var(--saffron); }
+
+  footer {
+    margin-top: 4rem; padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-mute); font-size: var(--step--1);
+  }
+  footer p { max-width: var(--measure); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .idea { transition: box-shadow .18s ease, border-color .18s ease; }
+    .idea:hover { border-color: var(--peacock); }
+  }
+  a { color: var(--vermilion); }
+  a:focus-visible, .idea:focus-visible { outline: 2px solid var(--peacock); outline-offset: 3px; }
+</style>
+
+<div class="wrap">
+
+  <header class="mast">
+    <div class="vel">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+        <path d="M13 1 L16.2 9.5 Q13 12 13 12 Q13 12 9.8 9.5 Z" fill="var(--vermilion)"/>
+        <rect x="12.2" y="11" width="1.6" height="14" fill="var(--peacock)"/>
+      </svg>
+      <span class="label">VetriDaily &middot; Revenue &amp; Growth</span>
+    </div>
+    <h1>VetriDaily Growth Plan</h1>
+    <p class="thesis">Your app is a one-screen MVP with no monetization. But you already own a
+      content API, a seven-product digital store, push infrastructure, and a Murugan YouTube channel.
+      <b>The work isn't building content — it's wiring what you already have into the app.</b></p>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Start here</span>
+      <h2>What you already own</h2>
+      <p class="lede">Every idea below is cheap because of this inventory. Nothing here needs to be
+        built from scratch — it needs a Retrofit interface and a screen.</p>
+    </div>
+
+    <div class="inv">
+      <div class="inv-item"><span class="k">festivals/*</span><span class="v">Upcoming, by month, by year, by slug. Full detail DTOs. Live today.</span></div>
+      <div class="inv-item"><span class="k">SpecialDatesCalculator</span><span class="v">Amavasai, Pournami, Ekadashi, Pradosham, <b>Sashti</b>, Chaturthi.</span></div>
+      <div class="inv-item"><span class="k">PanchangamCalculator</span><span class="v">Daily panchangam. Endpoint already public.</span></div>
+      <div class="inv-item"><span class="k">7 sellable PDFs</span><span class="v">Temple Travel Guide TN, Tamil Panchangam 2026, Numerology, Vastu, Baby Names, Marriage Porutham, Graha.</span></div>
+      <div class="inv-item"><span class="k">PushNotificationService</span><span class="v">Already built. The single biggest lever on retention.</span></div>
+      <div class="inv-item"><span class="k">Report services</span><span class="v">BirthChart, MarriagePorutham, HoroscopeReport — high-ticket personalization.</span></div>
+      <div class="inv-item"><span class="k">GeminiService</span><span class="v">AI generation for festival copy, descriptions, video scripts.</span></div>
+      <div class="inv-item"><span class="k">YouTube channel</span><span class="v">Murugan devotional. Currently zero connection to the app.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Part A</span>
+      <h2>Seven ways to earn</h2>
+      <p class="lede">Ordered by effort-to-first-rupee, not by size of prize. The first three are
+        reachable before you launch; the last two need an audience first.</p>
+    </div>
+
+    <div class="ideas">
+
+      <article class="idea">
+        <div class="body">
+          <div class="idea-top"><span class="idea-num">1</span><h3>Sell the PDFs you already made</h3></div>
+          <p class="why">You have seven finished digital products sitting in a build folder.
+            <b>Temple-Travel-Guide-TN</b> is the obvious one — a Murugan devotee app whose audience
+            wants to visit Arupadai Veedu is the exact buyer for a Tamil Nadu temple guide.
+            <b>Tamil-Panchangam-2026</b> sells itself next to a festival calendar.</p>
+          <div class="chips">
+            <span class="chip hot">Lowest effort</span><span class="chip">₹99–₹199 one-time</span>
+            <span class="chip">Play Billing</span><span class="chip">No new content</span>
+          </div>
+        </div>
+        <div class="build">
+          <span class="label">To build</span>
+          <ul>
+            <li>Google Play Billing Library — one-time products (INAPP, not SUBS)</li>
+            <li>A simple store screen; deliver the PDF from your existing <code>DigitalStoreService</code></li>
+            <li>Gate the download behind a purchase token verified server-side</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="idea">
+        <div class="body">
+          <div class="idea-top"><span class="idea-num">2</span><h3>Contextual selling on festival days</h3></div>
+          <p class="why">A generic store is ignored. A store that appears <em>on the right day</em> converts.
+            On Thai Poosam, surface the temple guide. On the first day of the Tamil year, surface the
+            panchangam. The festival API tells you what day it is; the store already has the product.
+            This is the highest-leverage idea in this document and it costs almost nothing.</p>
+          <div class="chips">
+            <span class="chip hot">Best ROI</span><span class="chip warm">Needs idea 1 + Part B</span>
+            <span class="chip">Timing-driven</span>
+          </div>
+        </div>
+        <div class="build">
+          <span class="label">To build</span>
+          <ul>
+            <li>Map festival <code>slug</code> → product id in a small config table</li>
+            <li>Show a single tasteful card on the festival's detail screen — never an interstitial</li>
+            <li>Fire the matching push the evening before via <code>PushNotificationService</code></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="idea">
+        <div class="body">
+          <div class="idea-top"><span class="idea-num">3</span><h3>Personalized reports as the premium tier</h3></div>
+          <p class="why">You have <code>BirthChartCalculatorService</code>,
+            <code>MarriagePoruthamService</code> and <code>HoroscopeReportService</code> already written.
+            Personalized output is the one thing users pay real money for, because it can't be
+            copied or found free elsewhere. Marriage porutham in particular has a strong,
+            urgent, family-driven willingness to pay in Tamil households.</p>
+          <div class="chips">
+            <span class="chip warm">Highest ticket</span><span class="chip">₹199–₹499</span>
+            <span class="chip">Backend done</span><span class="chip">Needs birth-detail form</span>
+          </div>
+        </div>
+        <div class="build">
+          <span class="label">To build</span>
+          <ul>
+            <li>Birth-details input (date, time, place) with a place picker</li>
+            <li>Purchase → call your report service → render + offer PDF export</li>
+            <li>Store the chart locally so repeat reports skip re-entry</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="idea">
+        <div class="body">
+          <div class="idea-top"><span class="idea-num">4</span><h3>VetriDaily Plus subscription</h3></div>
+          <p class="why">Recurring revenue beats one-time, but only once there's enough in the app
+            to be worth subscribing to. Bundle: full daily-audio archive, festival reminders,
+            complete panchangam, ad-free, early access. Price low and annual —
+            devotional audiences renew well when the price is close to a temple offering.</p>
+          <div class="chips">
+            <span class="chip cool">Recurring</span><span class="chip">₹49/mo or ₹399/yr</span>
+            <span class="chip">Needs depth first</span>
+          </div>
+        </div>
+        <div class="build">
+          <span class="label">To build</span>
+          <ul>
+            <li>Play Billing subscriptions + server-side entitlement check</li>
+            <li>Free tier keeps today's content; Plus unlocks the archive</li>
+            <li>Annual plan priced at ~8 months to push yearly commitment</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="idea">
+        <div class="body">
+          <div class="idea-top"><span class="idea-num">5</span><h3>Native ads — carefully, or not at all</h3></div>
+          <p class="why">AdMob is the fastest money to wire up and the easiest way to cheapen a
+            devotional app. If you do it: native ads only, placed <em>below</em> the day's content,
+            never an interstitial, and never during audio playback. Be realistic — at a few hundred
+            daily users this is pocket change, and it competes with your own store for attention.</p>
+          <div class="chips">
+            <span class="chip">Fast to wire</span><span class="chip">Low ceiling</span>
+            <span class="chip warm">Brand risk</span>
+          </div>
+        </div>
+        <div class="build">
+          <span class="label">To build</span>
+          <ul>
+            <li>AdMob native ad unit; suppress entirely for Plus subscribers</li>
+            <li>Consider skipping until idea 1 and 3 are live — they earn more per user</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="idea">
+        <div class="body">
+          <div class="idea-top"><span class="idea-num">6</span><h3>Sponsor a day's audio</h3></div>
+          <p class="why">Devotees give. The temple model — sponsoring an archanai or annadhanam —
+            translates directly: a user pays to sponsor one day's audio and their name (or a
+            family member's) appears as a dedication on that day. It's emotionally native to the
+            audience rather than a foreign "tip jar".</p>
+          <div class="chips">
+            <span class="chip cool">Culturally native</span><span class="chip">₹101 / ₹501 tiers</span>
+            <span class="chip warm">Check Play policy</span>
+          </div>
+        </div>
+        <div class="build">
+          <span class="label">To build</span>
+          <ul>
+            <li>Sell as a digital good through Play Billing, not as a donation — Play restricts donations</li>
+            <li>A <code>sponsor_name</code> column on <code>daily_content</code>; render as a dedication line</li>
+            <li>Cap one sponsor per day so it stays scarce and meaningful</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="idea">
+        <div class="body">
+          <div class="idea-top"><span class="idea-num">7</span><h3>YouTube AdSense, fed by the app</h3></div>
+          <p class="why">Your channel already monetizes (or can). The app is a free, high-intent
+            traffic source — and unlike ads inside the app, sending someone to your own channel
+            costs the user nothing and doesn't cheapen the experience. See Part C.</p>
+          <div class="chips">
+            <span class="chip cool">No app-side cost</span><span class="chip">Compounding</span>
+          </div>
+        </div>
+        <div class="build">
+          <span class="label">To build</span>
+          <ul><li>Everything in Part C</li></ul>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Part B</span>
+      <h2>The festival feature</h2>
+      <p class="lede">You asked for festival details in the app. This is almost entirely a client-side
+        job — the backend exists and is public.</p>
+    </div>
+
+    <p>Retrofit is already a dependency. Add a second API interface pointing at
+      <code>api.informationneeds.com</code> and you have festivals, panchangam and special dates
+      without writing a line of backend code.</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Screen</th><th>Endpoint you already have</th><th>Why it matters</th></tr></thead>
+        <tbody>
+          <tr><td>Festival list</td><td><code>GET /api/spiritual/festivals/upcoming?count=10</code></td><td>Home-screen card: "next festival in 6 days"</td></tr>
+          <tr><td>Year calendar</td><td><code>GET /api/spiritual/festivals/year/{year}</code></td><td>The full-year view devotees screenshot and share</td></tr>
+          <tr><td>Month view</td><td><code>GET /api/spiritual/festivals/month/{m}/{y}</code></td><td>Natural calendar browsing</td></tr>
+          <tr><td>Festival detail</td><td><code>GET /api/spiritual/festivals/{slug}</code></td><td>The page that sells a PDF and links a video</td></tr>
+          <tr><td>Daily panchangam</td><td><code>GET /api/spiritual/panchangam</code></td><td>Daily-return habit, independent of your content pipeline</td></tr>
+          <tr><td>Amavasai dates</td><td><code>GET /api/spiritual/amavasya/{year}</code></td><td>Ancestor rites — strong reminder trigger</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note" style="margin-top:1.25rem">
+      <span class="label">The Murugan angle</span>
+      <p><b>Sashti is your festival.</b> <code>SpecialDatesCalculatorService</code> already computes
+        monthly Sashti (tithi 6) alongside Amavasai, Pournami, Ekadashi and Pradosham. For a Murugan
+        devotee app, monthly Sashti and the six-day Skanda Sashti are the observances that define the
+        calendar — and you already have <code>sashti-audio.m4a</code> sitting in your rasi repo.
+        Lead the festival feature with Sashti rather than treating it as one row among many.</p>
+    </div>
+
+    <p style="margin-top:1.25rem">The Murugan festivals worth giving dedicated treatment, each with
+      its own audio, video link and product tie-in:</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Festival</th><th>Tamil month</th><th>Why it earns</th></tr></thead>
+        <tbody>
+          <tr><td>Skanda Sashti</td><td class="num">Aippasi</td><td>Six-day observance — a natural six-part paid audio series</td></tr>
+          <tr><td>Thai Poosam</td><td class="num">Thai</td><td>Peak kavadi/pilgrimage season → temple guide sells</td></tr>
+          <tr><td>Panguni Uthiram</td><td class="num">Panguni</td><td>Marriage-linked → porutham report sells</td></tr>
+          <tr><td>Vaikasi Visakam</td><td class="num">Vaikasi</td><td>Murugan's birth star — the channel's biggest video day</td></tr>
+          <tr><td>Karthigai Deepam</td><td class="num">Karthigai</td><td>Mass-participation festival, high sharing</td></tr>
+          <tr><td>Monthly Sashti</td><td class="num">every month</td><td>Twelve recurring engagement peaks per year</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Part C</span>
+      <h2>Feeding the YouTube channel</h2>
+      <p class="lede">The app has your most devoted users. The channel needs exactly those people.
+        Right now the two are completely disconnected.</p>
+    </div>
+
+    <div class="ideas">
+      <article class="idea">
+        <div class="body">
+          <div class="idea-top"><span class="idea-num">1</span><h3>End-of-audio handoff</h3></div>
+          <p class="why">The moment the daily audio finishes is the single best placement in the
+            entire app — the user is engaged, unhurried, and has nothing else to do. Show one
+            video card there. Not a banner, not a popup: one card, one video, chosen for the day.</p>
+        </div>
+      </article>
+
+      <article class="idea">
+        <div class="body">
+          <div class="idea-top"><span class="idea-num">2</span><h3>Every festival page links its video</h3></div>
+          <p class="why">Map festival <code>slug</code> → YouTube video id. Someone reading about
+            Thai Poosam wants to watch Thai Poosam content. This also gives you a reason to make
+            one video per festival, which is a year's content calendar decided for you.</p>
+        </div>
+      </article>
+
+      <article class="idea">
+        <div class="body">
+          <div class="idea-top"><span class="idea-num">3</span><h3>Deep-link to the YouTube app, not the browser</h3></div>
+          <p class="why">Opening <code>vnd.youtube:</code> hands the view to the native app, where
+            the user is signed in. Signed-in views count properly toward watch time and
+            subscription prompts actually work. A browser tab wastes the click.</p>
+        </div>
+      </article>
+
+      <article class="idea">
+        <div class="body">
+          <div class="idea-top"><span class="idea-num">4</span><h3>Ask for the subscribe late, once</h3></div>
+          <p class="why">A subscribe prompt on day 1 gets dismissed and trains the user to ignore
+            you. Gate it behind real commitment — day 7, or after five completed audios — and show
+            it exactly once. Your <code>DayProgressStore</code> already knows the number.</p>
+        </div>
+      </article>
+
+      <article class="idea">
+        <div class="body">
+          <div class="idea-top"><span class="idea-num">5</span><h3>Share sheets carry the channel</h3></div>
+          <p class="why">You just built the share feature. Every shared image should carry the
+            channel handle in its footer. Shares go into family WhatsApp groups — precisely your
+            target demographic, reached for free.</p>
+        </div>
+      </article>
+
+      <article class="idea">
+        <div class="body">
+          <div class="idea-top"><span class="idea-num">6</span><h3>Push on upload day</h3></div>
+          <p class="why">You already run <code>PushNotificationService</code>. A notification when a
+            new video lands turns installs into first-hour views, which is the signal YouTube's
+            algorithm weighs most heavily.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Part D</span>
+      <h2>What to build first</h2>
+      <p class="lede">Sequenced so each step makes the next one more valuable. Don't build the
+        subscription before there's something to subscribe to.</p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Order</th><th>Ship</th><th>Why now</th><th>Depends on</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td>Festival list + detail screens</td><td>API exists; adds real depth before launch</td><td>—</td></tr>
+          <tr><td class="num">2</td><td>YouTube card after audio</td><td>One screen, immediate channel lift</td><td>—</td></tr>
+          <tr><td class="num">3</td><td>Play Store launch</td><td>Nothing earns until it ships</td><td>1, 2</td></tr>
+          <tr><td class="num">4</td><td>Play Billing + PDF store</td><td>First real revenue, no new content</td><td>3</td></tr>
+          <tr><td class="num">5</td><td>Festival-timed offers + push</td><td>Turns the store from passive to converting</td><td>1, 4</td></tr>
+          <tr><td class="num">6</td><td>Personalized reports</td><td>Highest ticket; needs a trusting audience</td><td>4</td></tr>
+          <tr><td class="num">7</td><td>VetriDaily Plus</td><td>Only worth it once the archive has depth</td><td>1, 6</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note" style="margin-top:1.25rem">
+      <span class="label">Be realistic about the numbers</span>
+      <p>None of this earns meaningfully below roughly a thousand engaged users. At a few hundred
+        daily users, ads earn a rounding error and a subscription won't clear Play's payout
+        threshold. The order above front-loads the things that <em>grow</em> the audience —
+        festivals, push, YouTube — because audience is the input every revenue idea multiplies.
+        Monetize second.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p><b>Sources.</b> Endpoints read from <code>SpiritualController.cs</code> and
+      <code>SpecialDatesCalculatorService.cs</code>; product list from the API's
+      <code>DigitalProducts</code> build output; app structure from
+      <code>com.murugan.dailycalm</code>. Everything cited here exists in your codebases today.</p>
+    <p style="margin-top:.6rem">Written 26 August 2026. Kept in
+      <code>docs/VETRIDAILY_GROWTH_PLAN.html</code> so it survives.</p>
+  </footer>
+
+</div>
