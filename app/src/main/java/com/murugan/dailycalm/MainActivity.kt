@@ -34,8 +34,13 @@ import com.murugan.dailycalm.reminder.ReminderPreferences
 import com.murugan.dailycalm.reminder.ReminderScheduler
 import com.murugan.dailycalm.share.ShareUtils
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.murugan.dailycalm.ui.festivals.FestivalsScreen
 import com.murugan.dailycalm.ui.main.MainUiState
 import com.murugan.dailycalm.ui.main.MainViewModel
+import com.murugan.dailycalm.ui.more.MoreScreen
+import com.murugan.dailycalm.ui.nav.VetriBottomBar
+import com.murugan.dailycalm.ui.nav.VetriTab
+import com.murugan.dailycalm.ui.temples.TemplesScreen
 import com.murugan.dailycalm.ui.theme.DailyCalmTheme
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -111,9 +116,17 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                var selectedTab by remember { mutableStateOf(VetriTab.TODAY) }
+
                 Scaffold(
                     containerColor = Color.Transparent,
-                    snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+                    snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+                    bottomBar = {
+                        VetriBottomBar(
+                            selected = selectedTab,
+                            onSelect = { selectedTab = it }
+                        )
+                    }
                 ) { innerPadding ->
                     Box(
                         modifier = Modifier
@@ -128,6 +141,20 @@ class MainActivity : ComponentActivity() {
                                 )
                             )
                     ) {
+                      when (selectedTab) {
+                        VetriTab.TEMPLES -> TemplesScreen(
+                            modifier = Modifier.padding(innerPadding)
+                        )
+
+                        VetriTab.FESTIVALS -> FestivalsScreen(
+                            modifier = Modifier.padding(innerPadding)
+                        )
+
+                        VetriTab.MORE -> MoreScreen(
+                            modifier = Modifier.padding(innerPadding)
+                        )
+
+                        VetriTab.TODAY ->
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -538,6 +565,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
+                      }
                     }
                 }
             }
