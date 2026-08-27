@@ -209,3 +209,105 @@ feeds every other stream in the plan. Direct sales are a bonus on top.
 **Ship order within this feature:** home card → detail screen → list/calendar → temples → billing.
 The home card alone, showing the next festival with its Tamil name and date, is worth shipping on
 its own before any of the rest exists.
+
+---
+
+## 9. Real API behaviour — verified against live endpoints (2026-08-27)
+
+Called every endpoint directly. Four things differ from what the DTO shapes suggest. **Build to these,
+not to the class definitions.**
+
+### 9.1 `upcomingDates` is not upcoming
+
+`festivals/{slug}` returns `upcomingDates` containing **past dates going back to 2023**.
+`skanda-shashti-25` returns 50 dates starting 2023-01-26; `hindu-festival-days-16` returns 171.
+
+> **The app must filter `festivalDate >= today` client-side.** Do not trust the field name.
+> Sort ascending and take the next N.
+
+### 9.2 `featuredImage` is empty in practice
+
+Both `hindu-festival-days-16` and `skanda-shashti-25` return **no featured image**. The blueprint's
+"`FeaturedImage` + Tamil name → share card" needs a fallback: generate the share card from the Tamil
+name, date and muhurat window over your own template, exactly as `ShareUtils.kt` already does for the
+daily card. Treat any image from the API as a bonus, never a dependency.
+
+### 9.3 `festivalDetail` is HTML, not plain prose
+
+It arrives as `<p>…</p>` markup, 10–12 KB per festival (Skanda Shashti 10,816 chars; Hindu Festival
+Days 12,482). Two consequences:
+
+- Compose needs HTML rendering or tag-stripping — `Text()` will show raw markup
+- The blueprint's "drops straight into `publish_daily.py` for TTS" is **wrong as written**: strip the
+  HTML first, and 11 KB is far too long for one audio. Summarise before narrating.
+
+### 9.4 The year endpoint returns a slimmer DTO
+
+`festivals/year/{year}` returns only six fields — and critically **no `slug`**:
+
+```
+festivalID · festivalName · festivalDate · startingTime · endTime · festivalNameTamil
+```
+
+So you cannot navigate year-list → detail directly. Either match on `festivalID`, or drive the
+calendar from `festivals/masters` (which does carry slugs) and fetch dates per master.
+
+### 9.5 590 entries a year, and 40% of them are noise
+
+`festivals/year/2026` returns **590 dated entries across 199 distinct names**. The largest groups:
+
+| Count | Name |
+|---:|---|
+| 88 | Vehicle Purchase Muhurat |
+| 69 | Property Purchase Muhurat |
+| 30 | House Entry Muhurat |
+| 30 | Theipirai Suba Muhurtham |
+| 25 | Valarpirai Suba Muhurtham |
+| 13 | Girivalam |
+| 12 | Shukla Shashthi |
+
+**242 of 590 are purchase/muhurat days.** Dumping all 590 into one list buries the festivals a
+devotee actually opened the app for.
+
+### 9.6 Data hygiene
+
+Names carry trailing whitespace and tabs — `"House Entry Muhurat\t"`, `"Vehicle Purchase Muhurat "`,
+`"Krishna Paksha Ashtami\t"` — which splits identical festivals into separate groups (Krishna Paksha
+Ashtami appears as both 7 and 6 entries). Time formats are inconsistent too: `" 01:47 AM, Jan 01 "`,
+`"Jan 1, 06:34 AM"`, `"06:35  "`, `"22:22"` — mixed 12/24-hour, some with date prefixes, some without.
+
+**Trim and normalise on the client.** Don't assume the server will.
+
+---
+
+## 10. Recommended grouping — showing all festivals without drowning the user
+
+The user asked for *all* festivals in the app. Show all of them, but in three separated sections
+rather than one 590-row list. `festivals/masters` returns exactly 25 types, which map cleanly:
+
+### Section 1 — பண்டிகைகள் · Festivals *(the default tab)*
+Skanda Shashti · Hindu Festival Days · Karthigai · Shivaratri · Sangadahara Chathurti ·
+Chandra Dharshan · Muslim Festival Days · Christian Festival Days
+
+### Section 2 — விரத நாட்கள் · Vratham days *(the retention engine)*
+Shashti · Ekadasi · Pradosham · Pournami · Amavasya · Ashtami · Navami
+
+### Section 3 — நல்ல நாள் · Auspicious days *(collapsed by default)*
+Suba Muhurtham · Sunday Suba Muhurtham · Valarpirai and Theipirai Suba Muhurtham ·
+Property Purchase · Vehicle Purchase · Graha Pravesham · Girivalam · Saturn Transit ·
+Lunar Eclipse · Solar Eclipse
+
+Section 3 is where the 242 muhurat entries go. Keep it — it's genuinely useful and it's what general
+Tamil calendar apps compete on — but collapsed, so it never buries sections 1 and 2.
+
+### For a Murugan app specifically
+
+Pin to the top of section 1, above everything else:
+
+| Slug | Why |
+|---|---|
+| `skanda-shashti-25` | கந்த சஷ்டி — the annual peak, 50 dates with full muhurat windows |
+| `shashti-4` | Monthly Sashti — twice a month, ~24 app opens a year |
+| `karthigai-3` | Masik Karthigai — 11 dates in 2026, strongly Murugan-linked |
+
+That is the difference between VetriDaily and Nithra: the same API, ordered around one deity.
