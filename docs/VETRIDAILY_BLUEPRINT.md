@@ -259,30 +259,46 @@ Play Billing with remove-ads and packs first, then AdMob under the placement rul
 
 ---
 
-## Part 6 — Open decisions
+## Part 6 — Decisions (RESOLVED 2026-08-26)
 
-Five calls needed before Phase 2. Everything through Phase 1 can start without them.
+All five answered by the user. These are settled — build to them.
 
-**1. Does the app call the InformationNeeds API directly, or proxy through Supabase?**
-*Recommendation: direct.* Panchangam and horoscope are live data with no audio attached — proxying
-only creates a sync problem. Keep Supabase for practice content. This does mean the InformationNeeds
-API needs a public read endpoint and CORS/rate limits reviewed for mobile traffic.
+**1. Direct API, not a Supabase proxy.** ✅ **DECIDED: direct.**
+The app calls `api.informationneeds.com` for panchangam, horoscope, festivals, temples and special
+dates. Supabase keeps only the daily practice content, where audio is attached and offline playback
+matters. Consequences to handle in Phase 2:
+- The API is served over **HTTPS**, so no `usesCleartextTraffic` exception is needed (Android 9+
+  blocks plain HTTP by default)
+- Review rate limits for mobile traffic — one app open can fan out to several endpoints
+- Cache aggressively client-side: festivals and temples change rarely, panchangam changes daily
 
-**2. Should the 70-day journey stay gated once there's unlimited content?**
-*Recommendation: yes.* The daily unlock is the habit mechanic and the reason this isn't a calendar.
-With the bridge feeding it, the journey simply continues past 70 instead of ending.
+**2. The 70-day journey stays gated.** ✅ **DECIDED: yes, keep the daily unlock.**
+It is the habit mechanic and the reason this isn't a calendar. With the Phase 1 content bridge
+feeding it, the journey continues past 70 instead of ending.
 
-**3. Free/paid boundary — where does it fall?**
-*Recommendation: keep all daily content free, sell packs and remove-ads.* Gating the daily practice
-kills the habit that makes people willing to buy anything. **Sell depth, not access.**
+**3. Free/paid boundary: sell depth, not access.** ✅ **DECIDED.**
+All daily content stays free. Revenue comes from packs and remove-ads. Gating the daily practice
+would kill the habit that makes people willing to buy anything.
 
-**4. Does informationneeds.com already run AdSense?**
-If it does, cross-traffic monetizes immediately and Layer 3 is worth more than it looks. If not, the
-portal links are still worth building for retention, but rank lower.
+**4. informationneeds.com runs AdSense.** ✅ **CONFIRMED: yes.**
+This **promotes Layer 3 (portal cross-traffic)**. Every temple, festival and article detail screen
+gets a மேலும் படிக்க link into the portal, and each tap earns AdSense revenue immediately — with no
+Play Billing, no AdMob setup, no consent SDK, and no Play Console declaration. It is the fastest
+revenue path in the entire plan and should ship **during Phase 2**, not wait for Phase 4.
 
-**5. Is the app currently live on Play Store?**
-There's a signing keystore and a full release guide in the repo, which suggests yes. If it is live,
-Phase 0 becomes urgent — every existing user past day 70 is looking at an error screen right now.
+**5. App is uploaded to Play Console in TESTING, not production.** ✅ **CONFIRMED.**
+This **de-escalates Phase 0** — there are no public users sitting on a day-71 error screen. It also
+means the fixes already committed in `58ab519` reach testers on the next testing-track release.
+The window before public launch is the right time to land Phase 2, so the app launches with four
+tabs rather than one screen.
+
+### What the answers changed
+
+| Decision | Effect on the plan |
+|---|---|
+| AdSense = yes | Portal links move **up** — ship in Phase 2, earn before Play Billing exists |
+| Testing, not live | Phase 0 urgency **drops**; more room to build Phase 2 before public launch |
+| Direct API | No proxy layer to build; needs a second Retrofit client + rate-limit review |
 
 ---
 
