@@ -1,0 +1,371 @@
+<title>Festival Feature Spec</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Tamil:wght@500;600;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --ground:#F1F5F4; --surface:#FFFFFF; --surface-alt:#E7EEEC;
+    --ink:#16211F; --ink-soft:#46574F; --ink-mute:#6B7B76;
+    --rule:#D2DEDB; --rule-soft:#E3EAE8;
+    --vermilion:#B7331B; --peacock:#0E6E6B; --saffron:#B26A12;
+    --chip-ink:#FFFFFF;
+    --shadow:0 1px 2px rgba(22,33,31,.06), 0 8px 24px -16px rgba(22,33,31,.28);
+    --measure:68ch;
+    --step--1:clamp(.78rem,.76rem + .1vw,.84rem);
+    --step-0:clamp(1rem,.97rem + .16vw,1.09rem);
+    --step-1:clamp(1.2rem,1.13rem + .35vw,1.42rem);
+    --step-2:clamp(1.5rem,1.36rem + .68vw,2rem);
+    --step-3:clamp(2rem,1.7rem + 1.5vw,3.1rem);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:#0C1413; --surface:#141F1D; --surface-alt:#1B2825;
+      --ink:#E7EFEC; --ink-soft:#B3C3BE; --ink-mute:#849791;
+      --rule:#273633; --rule-soft:#1E2C29;
+      --vermilion:#EE6647; --peacock:#3FB3AB; --saffron:#E9A340;
+      --chip-ink:#0C1413;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#0C1413; --surface:#141F1D; --surface-alt:#1B2825;
+    --ink:#E7EFEC; --ink-soft:#B3C3BE; --ink-mute:#849791;
+    --rule:#273633; --rule-soft:#1E2C29;
+    --vermilion:#EE6647; --peacock:#3FB3AB; --saffron:#E9A340;
+    --chip-ink:#0C1413;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+  }
+
+  *,*::before,*::after { box-sizing:border-box; }
+
+  body {
+    background:var(--ground); color:var(--ink);
+    font-family:"Source Serif 4",Georgia,serif;
+    font-size:var(--step-0); line-height:1.65;
+    margin:0; padding:0 1.25rem 6rem;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:74ch; margin:0 auto; }
+
+  h1,h2,h3 { font-family:"Anek Tamil","Segoe UI",system-ui,sans-serif; text-wrap:balance; line-height:1.12; margin:0; }
+  .label {
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:var(--step--1); letter-spacing:.1em; text-transform:uppercase; color:var(--ink-mute);
+  }
+
+  header.mast { display:flex; flex-direction:column; gap:1.1rem; padding:4.5rem 0 2rem; border-bottom:2px solid var(--ink); }
+  .vel { display:flex; align-items:center; gap:.7rem; }
+  h1 { font-size:var(--step-3); font-weight:800; letter-spacing:-.02em; }
+  .thesis { font-size:var(--step-1); color:var(--ink-soft); max-width:var(--measure); margin:0; }
+  .thesis b { color:var(--ink); font-weight:600; }
+
+  section { padding-top:3.5rem; }
+  .sec-head { display:flex; flex-direction:column; gap:.5rem; margin-bottom:1.4rem; }
+  h2 { font-size:var(--step-2); font-weight:800; letter-spacing:-.015em; }
+  h3 { font-size:var(--step-1); font-weight:600; margin-top:1.6rem; }
+  .lede { color:var(--ink-soft); max-width:var(--measure); margin:0; }
+  p { max-width:var(--measure); }
+
+  .scroll { overflow-x:auto; border:1px solid var(--rule); border-radius:3px; background:var(--surface); margin-top:.9rem; }
+  table { border-collapse:collapse; width:100%; font-size:var(--step--1); }
+  th,td { text-align:left; padding:.6rem .8rem; border-bottom:1px solid var(--rule-soft); vertical-align:top; }
+  th { font-family:"IBM Plex Mono",monospace; font-size:.72rem; letter-spacing:.08em; text-transform:uppercase;
+       color:var(--ink-mute); background:var(--surface-alt); white-space:nowrap; }
+  tbody tr:last-child td { border-bottom:0; }
+  td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  td.total { font-weight:600; color:var(--vermilion); }
+  td code { white-space:nowrap; }
+
+  code {
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.85em;
+    background:var(--ground); border:1px solid var(--rule-soft); border-radius:2px;
+    padding:.06em .35em; color:var(--ink); word-break:break-word;
+  }
+  pre {
+    background:var(--surface); border:1px solid var(--rule); border-radius:3px;
+    padding:.9rem 1.1rem; overflow-x:auto; margin:1rem 0;
+    font-family:"IBM Plex Mono",monospace; font-size:var(--step--1); line-height:1.7; color:var(--ink-soft);
+  }
+  pre b { color:var(--vermilion); font-weight:600; }
+
+  .stream {
+    background:var(--surface); border:1px solid var(--rule); border-left:3px solid var(--peacock);
+    border-radius:0 3px 3px 0; padding:1.1rem 1.3rem; margin-top:1rem;
+    display:flex; flex-direction:column; gap:.55rem; box-shadow:var(--shadow);
+  }
+  .stream .label { color:var(--peacock); }
+  .stream p { margin:0; max-width:none; }
+  .stream h3 { margin:0; }
+
+  .note {
+    border-left:3px solid var(--saffron); background:var(--surface);
+    border-top:1px solid var(--rule); border-right:1px solid var(--rule); border-bottom:1px solid var(--rule);
+    padding:.9rem 1.1rem; border-radius:0 3px 3px 0; margin-top:1.2rem;
+    display:flex; flex-direction:column; gap:.4rem;
+  }
+  .note p { margin:0; font-size:var(--step--1); color:var(--ink-soft); max-width:none; }
+  .note .label { color:var(--saffron); }
+
+  ul.check { list-style:none; padding:0; margin:.6rem 0 0; display:flex; flex-direction:column; gap:.3rem; }
+  ul.check li { font-size:var(--step--1); color:var(--ink-soft); padding-left:1.5rem; position:relative; line-height:1.55; }
+  ul.check li::before {
+    content:""; position:absolute; left:0; top:.42em;
+    width:.7rem; height:.7rem; border:1px solid var(--rule); border-radius:2px; background:var(--ground);
+  }
+  .grp { margin-top:1.3rem; }
+  .grp > .label { color:var(--vermilion); }
+
+  footer { margin-top:4rem; padding-top:1.5rem; border-top:1px solid var(--rule); color:var(--ink-mute); font-size:var(--step--1); }
+  a { color:var(--vermilion); }
+  a:focus-visible { outline:2px solid var(--peacock); outline-offset:3px; }
+</style>
+
+<div class="wrap">
+
+  <header class="mast">
+    <div class="vel">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+        <path d="M13 1 L16.2 9.5 Q13 12 13 12 Q13 12 9.8 9.5 Z" fill="var(--vermilion)"/>
+        <rect x="12.2" y="11" width="1.6" height="14" fill="var(--peacock)"/>
+      </svg>
+      <span class="label">VetriDaily &middot; Build step 1</span>
+    </div>
+    <h1>Festival Feature Spec</h1>
+    <p class="thesis">The festival screens don't sell anything by themselves. They earn by creating
+      <b>eighteen high-intent moments a year</b> where you have a reason to reach a devotee — and
+      something relevant to offer at that exact moment.</p>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Section 1</span>
+      <h2>What you're building</h2>
+      <p class="lede">Three screens, all client-side. The backend exists and is already public.</p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Screen</th><th>Endpoint</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Home card — next festival</td><td><code>festivals/upcoming?count=3</code></td><td>One card on the existing main screen</td></tr>
+          <tr><td>Festival list / calendar</td><td><code>festivals/year/{year}</code><br><code>festivals/month/{m}/{y}</code></td><td>Month + year toggle</td></tr>
+          <tr><td>Festival detail</td><td><code>festivals/{slug}</code></td><td>The screen that earns</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>The API already writes your content</h3>
+    <p><code>FestivalDetailDto</code> is richer than you'd expect. You do not need to author festival copy.</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Field</th><th>Use it for</th></tr></thead>
+        <tbody>
+          <tr><td><code>FestivalNameTamil</code></td><td>Primary heading — your audience reads Tamil first</td></tr>
+          <tr><td><code>FestivalShortDescTamil</code></td><td>List subtitle</td></tr>
+          <tr><td><code>FestivalDetail</code></td><td>Full body copy on the detail screen</td></tr>
+          <tr><td><code>FeaturedImage</code></td><td>Hero image <em>and</em> the share-sheet image</td></tr>
+          <tr><td><code>UpcomingDates[]</code></td><td>"Next: 14 Nov 2026", plus future years</td></tr>
+          <tr><td><code>StartingTime</code> / <code>EndTime</code></td><td>Muhurat window — high perceived value</td></tr>
+          <tr><td><code>Slug</code></td><td>Join key for products, videos, deep links</td></tr>
+          <tr><td><code>FestivalKeywords</code></td><td>Play Store ASO + notification copy</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <span class="label">The sleeper field</span>
+      <p><code>StartingTime</code>/<code>EndTime</code> is the one to build around. Devotees re-check
+        auspicious timing repeatedly on the day itself, which turns a single festival into several
+        app opens rather than one.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Stream A</span>
+      <h2>Contextual product sales</h2>
+      <p class="lede">The core mechanism. A store tab gets ignored; a product surfaced on the right
+        day converts. All seven products already exist as PDFs.</p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Festival</th><th>Product to surface</th><th>Why it converts</th></tr></thead>
+        <tbody>
+          <tr><td>Thai Poosam</td><td><b>Temple-Travel-Guide-TN</b></td><td>Peak kavadi season — users are actively planning Palani and Thiruchendur trips</td></tr>
+          <tr><td>Panguni Uthiram</td><td><b>Marriage-Compatibility-Guide</b></td><td>Celebrates the Murugan–Deivanai marriage; families think about matches</td></tr>
+          <tr><td>Vaikasi Visakam</td><td><b>Temple-Travel-Guide-TN</b></td><td>Murugan's birth star — the year's biggest Murugan temple day</td></tr>
+          <tr><td>Skanda Sashti</td><td><em>Sashti 6-day audio pack</em></td><td>Six-day observance — see Stream B</td></tr>
+          <tr><td>Karthigai Deepam</td><td><b>Vastu-Tips-Home</b></td><td>Home-and-lamp focused festival</td></tr>
+          <tr><td>Tamil New Year</td><td><b>Tamil-Panchangam-2026</b></td><td>Year-ahead planning is the whole point of the day</td></tr>
+          <tr><td>Amavasai (monthly)</td><td><b>Numerology-Guide</b></td><td>Ancestor rites bring reflective, receptive users</td></tr>
+          <tr><td>Birth-related</td><td><b>Baby-Names-Book</b></td><td>Namakaranam timing questions</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Placement rules</h3>
+    <ul class="check">
+      <li><b>One card</b>, below the festival body copy. Never an interstitial, never above the content.</li>
+      <li>Copy names the benefit, not the format — "Plan your Palani trip" beats "Buy PDF (2.4 MB)".</li>
+      <li>Suppress entirely for users who already own the product.</li>
+      <li>Be careful on Amavasai — it's reflective, not celebratory. Test that placement before shipping it.</li>
+    </ul>
+
+    <h3>The funnel</h3>
+    <pre>Evening before, 7–8 PM   <b>push</b>  "Thai Poosam is tomorrow — timings inside"
+          ↓
+Festival detail screen           Tamil name · image · muhurat window · description
+          ↓
+One product card                 "Plan your Palani trip — Temple Guide ₹149"
+          ↓
+Play Billing                     one-time INAPP purchase
+          ↓
+Server-verified download         DigitalStoreService delivers the PDF</pre>
+
+    <p>The evening-before push matters more than anything on the screen itself. It's the difference
+      between a festival feature people happen to discover and one that actually reaches them.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Streams B–E</span>
+      <h2>Four more ways the same screens earn</h2>
+    </div>
+
+    <div class="stream">
+      <span class="label">Stream B</span>
+      <h3>Festival audio packs</h3>
+      <p>Your daily audio pipeline already generates Tamil devotional audio. A festival pack is the
+        same machinery pointed at a themed script. <b>Skanda Sashti is the obvious first product</b> —
+        six days, six audios, sold as one pack, and you already have <code>sashti-audio.m4a</code> in
+        the rasi repo. Release it day by day so buyers open the app six mornings running. This is the
+        only genuinely new content in the plan, and it's one script per day for six days.</p>
+    </div>
+
+    <div class="stream">
+      <span class="label">Stream C</span>
+      <h3>The Murugan temple directory</h3>
+      <p>Nearly free, and you may not realise you have it:</p>
+      <pre>GET /api/temples?deity=Murugan&amp;page=1&amp;pageSize=20
+GET /api/temples?deity=Murugan&amp;city=Palani
+GET /api/temples/{slug}</pre>
+      <p><code>TempleListDto</code> carries <code>NameTamil</code>, <code>DeityTamil</code>,
+        <code>Location</code>, <code>City</code>, <code>ImageURL</code>. An <b>Arupadai Veedu</b>
+        screen — the six sacred abodes — is a headline feature that costs one query parameter. Link
+        each festival to its temples, and put the Temple Travel Guide card where intent is highest in
+        the entire app.</p>
+    </div>
+
+    <div class="stream">
+      <span class="label">Stream D</span>
+      <h3>Video feed into your channel</h3>
+      <p><code>VideoListDto</code> already carries <code>VideoURL</code>, <code>CategoryName</code>,
+        <code>Views</code>, <code>Likes</code> and — notably — <b><code>IsPremium</code></b>. You have
+        a premium-video flag built and unused. Free videos open with <code>vnd.youtube:</code> so the
+        view lands in the signed-in native app and counts toward watch time; premium ones sit behind
+        the same Play Billing entitlement as the PDFs.</p>
+    </div>
+
+    <div class="stream">
+      <span class="label">Stream E</span>
+      <h3>Festival sponsorship from local business</h3>
+      <p>You have <code>DirectoryController</code> with <code>categories</code> and
+        <code>featured</code> — a business directory. Tamil festivals are shopping seasons; silk
+        shops, jewellers and travel operators all spend around Thai Poosam. A "featured near you" slot
+        on a festival or temple page beats AdMob rates because it's targeted by intent, region
+        <em>and</em> date. Honest caveat: this needs real install numbers before anyone pays. Build
+        the slot now, sell it in year two.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Section 3</span>
+      <h2>What this actually earns</h2>
+      <p class="lede">Assumptions stated so you can argue with them: 15–25% push open rate (opted-in
+        devotees run high), ~3% conversion on major festivals and ~1% on monthly observances,
+        ₹149 average price, Play takes 15%, 18 revenue events a year.</p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th class="num">Installs</th><th class="num">6 major festivals</th><th class="num">12 monthly events</th><th class="num">Net / year</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1,000</td><td class="num">₹4,000</td><td class="num">₹1,800</td><td class="num total">≈ ₹5,000</td></tr>
+          <tr><td class="num">5,000</td><td class="num">₹20,000</td><td class="num">₹9,000</td><td class="num total">≈ ₹25,000</td></tr>
+          <tr><td class="num">20,000</td><td class="num">₹80,000</td><td class="num">₹36,000</td><td class="num total">≈ ₹99,000</td></tr>
+          <tr><td class="num">50,000</td><td class="num">₹200,000</td><td class="num">₹90,000</td><td class="num total">≈ ₹247,000</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <span class="label">Read this honestly</span>
+      <p>At 1,000 installs this is roughly ₹400 a month — not a business. The numbers only get
+        interesting past about 20,000 installs. That isn't an argument against building it, it's the
+        argument <em>for</em> building it first: it scales linearly with installs while costing
+        nothing per user, the backend already exists, and it's the retention engine that grows
+        installs in the first place. The real value is eighteen reasons a year to reopen the app.
+        Direct sales are the bonus on top.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Section 4</span>
+      <h2>Build checklist</h2>
+    </div>
+
+    <div class="grp">
+      <span class="label">Client</span>
+      <ul class="check">
+        <li>Second Retrofit interface for <code>api.informationneeds.com</code> — separate base URL from Supabase</li>
+        <li><code>FestivalListDto</code> / <code>FestivalDetailDto</code> / <code>TempleListDto</code> data classes</li>
+        <li>Home card — next 3 upcoming festivals</li>
+        <li>Festival list screen with month + year toggle</li>
+        <li>Festival detail — Tamil name first, <code>FeaturedImage</code> hero, muhurat window, body</li>
+        <li>Arupadai Veedu screen — <code>?deity=Murugan</code></li>
+        <li>Share sheet reuses the existing <code>share/</code> package with <code>FeaturedImage</code></li>
+        <li>24h disk cache — festivals change rarely, and it makes the app work offline</li>
+      </ul>
+    </div>
+
+    <div class="grp">
+      <span class="label">Monetization</span>
+      <ul class="check">
+        <li>Play Billing Library, one-time <code>INAPP</code> products</li>
+        <li><code>slug</code> → product id config table</li>
+        <li><code>slug</code> → video id config table</li>
+        <li>Server-side purchase token verification before PDF delivery</li>
+        <li>Entitlement check honouring <code>IsPremium</code> on videos</li>
+      </ul>
+    </div>
+
+    <div class="grp">
+      <span class="label">Retention</span>
+      <ul class="check">
+        <li>Festival reminder scheduling via the existing WorkManager setup</li>
+        <li>Server push the evening before, via <code>PushNotificationService</code></li>
+        <li>Per-festival opt-out so reminders never feel like spam</li>
+      </ul>
+    </div>
+
+    <div class="note">
+      <span class="label">Ship order within this feature</span>
+      <p>Home card → detail screen → list/calendar → temples → billing. The home card alone, showing
+        the next festival with its Tamil name and date, is worth shipping before any of the rest
+        exists.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Endpoints and DTO fields read from <code>SpiritualController.cs</code>,
+      <code>AllOtherControllers.cs</code>, <code>FestivalDtos</code>, <code>TempleDtos.cs</code> and
+      <code>VideoDtos.cs</code>. Companion to <code>docs/VETRIDAILY_GROWTH_PLAN.md</code>.
+      Written 26 August 2026.</p>
+  </footer>
+
+</div>
