@@ -22,6 +22,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,11 +46,23 @@ private val Faint = Color(0x80FFFFFF)
 @Composable
 fun FestivalsScreen(
     modifier: Modifier = Modifier,
-    viewModel: FestivalsViewModel = viewModel(factory = FestivalsViewModel.Factory),
-    onFestivalClick: (slug: String) -> Unit = {}
+    viewModel: FestivalsViewModel = viewModel(factory = FestivalsViewModel.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val expanded by viewModel.expandedSections.collectAsState()
+
+    var selectedSlug by rememberSaveable { mutableStateOf<String?>(null) }
+
+    selectedSlug?.let { slug ->
+        FestivalDetailScreen(
+            slug = slug,
+            onBack = { selectedSlug = null },
+            modifier = modifier
+        )
+        return
+    }
+
+    val onFestivalClick: (String) -> Unit = { slug -> selectedSlug = slug }
 
     Box(modifier = modifier.fillMaxSize()) {
         when (val state = uiState) {

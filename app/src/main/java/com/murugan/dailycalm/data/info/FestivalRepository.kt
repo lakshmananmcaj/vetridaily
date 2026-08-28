@@ -104,17 +104,28 @@ class FestivalRepository(private val api: InfoNeedsApi = InfoNeedsApi) {
                 return@withContext Result.failure(it)
             }
 
-            val masterIdByTamilName = masters
+            val masterByTamilName = masters
                 .filter { !it.nameTamil.isNullOrBlank() }
-                .associate { it.nameTamil!!.clean() to it.masterId }
+                .associateBy { it.nameTamil!!.clean() }
 
             val grouped = occurrences
                 .upcomingOnly()
                 .sortedByDate()
+                // The year endpoint omits slug and masterId, which would leave every row
+                // untappable. Both are recovered from the matched master so detail pages open.
+                .map { occurrence ->
+                    val master = masterByTamilName[occurrence.nameTamil?.clean().orEmpty()]
+                    if (occurrence.slug != null && occurrence.masterId != null) {
+                        occurrence
+                    } else {
+                        occurrence.copy(
+                            slug = occurrence.slug ?: master?.slug,
+                            masterId = occurrence.masterId ?: master?.masterId
+                        )
+                    }
+                }
                 .groupBy { occurrence ->
-                    val masterId = occurrence.masterId
-                        ?: masterIdByTamilName[occurrence.nameTamil?.clean().orEmpty()]
-                    sectionByMasterId[masterId] ?: FestivalSection.AUSPICIOUS
+                    sectionByMasterId[occurrence.masterId] ?: FestivalSection.AUSPICIOUS
                 }
 
             // Fixed section order; an empty section is omitted rather than shown blank.
