@@ -29,7 +29,7 @@ data class FestivalGroup(
     val occurrences: List<FestivalOccurrence>
 )
 
-class FestivalRepository(private val api: InfoNeedsApi = InfoNeedsApi) {
+class FestivalRepository(private val api: InfoNeedsDataSource = InfoNeedsApi) {
 
     /**
      * Section for each of the 25 festival masters, keyed by `festivalMasterID`.

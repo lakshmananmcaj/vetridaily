@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
  * offline playback matters. This API supplies the live reference data — festivals, temples,
  * panchangam — which changes daily and carries no audio.
  */
-object InfoNeedsApi {
+object InfoNeedsApi : InfoNeedsDataSource {
 
     private const val TAG = "InfoNeedsApi"
 
@@ -106,19 +106,19 @@ object InfoNeedsApi {
         Result.failure(e)
     }
 
-    suspend fun getFestivalMasters(): Result<List<FestivalMaster>> =
+    override suspend fun getFestivalMasters(): Result<List<FestivalMaster>> =
         call("getFestivalMasters") { service.getFestivalMasters() }
 
-    suspend fun getUpcomingFestivals(count: Int = 10): Result<List<FestivalOccurrence>> =
+    override suspend fun getUpcomingFestivals(count: Int): Result<List<FestivalOccurrence>> =
         call("getUpcomingFestivals") { service.getUpcomingFestivals(count) }
 
-    suspend fun getFestivalsByYear(year: Int): Result<List<FestivalOccurrence>> =
+    override suspend fun getFestivalsByYear(year: Int): Result<List<FestivalOccurrence>> =
         call("getFestivalsByYear") { service.getFestivalsByYear(year) }
 
-    suspend fun getFestivalsByMonth(month: Int, year: Int): Result<List<FestivalOccurrence>> =
+    override suspend fun getFestivalsByMonth(month: Int, year: Int): Result<List<FestivalOccurrence>> =
         call("getFestivalsByMonth") { service.getFestivalsByMonth(month, year) }
 
-    suspend fun getFestival(slug: String): Result<FestivalDetail> =
+    override suspend fun getFestival(slug: String): Result<FestivalDetail> =
         call("getFestival($slug)") { service.getFestival(slug) }
 
     /**
@@ -129,10 +129,10 @@ object InfoNeedsApi {
      * "Lord Senthilnathan", so `deity=Murugan` matches only two of them. Filtering happens
      * client-side on `templeType` instead — see [TempleRepository].
      */
-    suspend fun getAllTemples(): Result<List<Temple>> =
+    override suspend fun getAllTemples(): Result<List<Temple>> =
         call("getAllTemples") { service.getTemples() }.map { it.items.orEmpty() }
 
-    suspend fun getTemple(slug: String): Result<Temple> =
+    override suspend fun getTemple(slug: String): Result<Temple> =
         call("getTemple($slug)") { service.getTemple(slug) }
 }
 

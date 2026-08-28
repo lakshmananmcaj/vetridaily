@@ -3,7 +3,7 @@ package com.murugan.dailycalm.data.info
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class TempleRepository(private val api: InfoNeedsApi = InfoNeedsApi) {
+class TempleRepository(private val api: InfoNeedsDataSource = InfoNeedsApi) {
 
     /**
      * The six abodes of Murugan. Matched on `templeType` rather than `deity`, because each shrine
