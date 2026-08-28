@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.murugan.dailycalm.data.info.FestivalDate
 import com.murugan.dailycalm.data.info.FestivalDetail
 import com.murugan.dailycalm.data.info.FestivalRepository
-import com.murugan.dailycalm.data.info.InfoNeedsApi
+import com.murugan.dailycalm.Links
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -214,11 +214,13 @@ private fun FestivalDetailContent(detail: FestivalDetail, onBack: () -> Unit) {
             }
         }
 
-        detail.slug?.let { slug ->
+        // Purchase-muhurat masters have their own portal page; everything else falls back to the
+        // festival's own entry.
+        Links.portalUrlForFestival(detail.masterId, detail.slug)?.let { url ->
             item {
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { context.openUrl("${InfoNeedsApi.PORTAL_URL}/festivals/$slug") },
+                    onClick = { context.openUrl(url) },
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFE7F4FF))
                 ) {

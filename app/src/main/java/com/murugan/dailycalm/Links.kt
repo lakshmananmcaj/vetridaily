@@ -15,4 +15,27 @@ object Links {
 
     /** What people read. Shown on cards and in the More tab; never used as the target. */
     const val YOUTUBE_HANDLE = "@murugandevotee"
+
+    const val PORTAL_URL = "https://informationneeds.com"
+
+    /**
+     * Festival masters that have a dedicated portal page, keyed by `festivalMasterID`.
+     *
+     * Someone reading a vehicle-purchase muhurat wants the vehicle-purchase page, not the generic
+     * festival entry — and those two masters alone account for 157 of the year's rows, so this is
+     * the difference between a "read more" that matches the screen and one that does not.
+     */
+    private val PORTAL_PATH_BY_MASTER_ID = mapOf(
+        13 to "/auspicious-dates/property-purchase",
+        14 to "/auspicious-dates/vehicle-purchase"
+    )
+
+    /**
+     * Where "read more" should go for a festival. Falls back to the festival's own portal page,
+     * which exists for every slug.
+     */
+    fun portalUrlForFestival(masterId: Int?, slug: String?): String? {
+        PORTAL_PATH_BY_MASTER_ID[masterId]?.let { return "$PORTAL_URL$it" }
+        return slug?.takeIf { it.isNotBlank() }?.let { "$PORTAL_URL/festivals/$it" }
+    }
 }
