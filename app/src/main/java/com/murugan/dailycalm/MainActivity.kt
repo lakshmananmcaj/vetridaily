@@ -77,6 +77,9 @@ class MainActivity : ComponentActivity() {
                 var reminderEnabled by remember { mutableStateOf(reminderPrefs.isEnabled()) }
                 var reminderHour by remember { mutableStateOf(reminderPrefs.getHour()) }
                 var reminderMinute by remember { mutableStateOf(reminderPrefs.getMinute()) }
+                var festivalRemindersEnabled by remember {
+                    mutableStateOf(reminderPrefs.isFestivalRemindersEnabled())
+                }
 
                 val audioUrl = if (uiState is MainUiState.Success) {
                     (uiState as MainUiState.Success).content.audio_url
@@ -114,6 +117,14 @@ class MainActivity : ComponentActivity() {
                         ReminderScheduler.schedule(context, reminderHour, reminderMinute)
                     } else {
                         ReminderScheduler.cancel(context)
+                    }
+                }
+
+                LaunchedEffect(festivalRemindersEnabled) {
+                    if (festivalRemindersEnabled) {
+                        ReminderScheduler.scheduleFestivalReminders(context)
+                    } else {
+                        ReminderScheduler.cancelFestivalReminders(context)
                     }
                 }
 
@@ -338,6 +349,38 @@ class MainActivity : ComponentActivity() {
                                         )
                                     ) {
                                         Text("Set Reminder Time")
+                                    }
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = "பண்டிகை · சஷ்டி நினைவூட்டல்",
+                                                color = Color(0xFFF2FAFF),
+                                                style = MaterialTheme.typography.titleMedium
+                                            )
+                                            Text(
+                                                text = "Evening alert the day before",
+                                                color = Color(0xFFD1E6F3),
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
+                                        }
+                                        Switch(
+                                            checked = festivalRemindersEnabled,
+                                            onCheckedChange = { checked ->
+                                                festivalRemindersEnabled = checked
+                                                reminderPrefs.setFestivalRemindersEnabled(checked)
+                                            },
+                                            colors = SwitchDefaults.colors(
+                                                checkedThumbColor = Color(0xFF1D170A),
+                                                checkedTrackColor = Color(0xFFF4B73E),
+                                                uncheckedThumbColor = Color(0xFFD3DCE3),
+                                                uncheckedTrackColor = Color(0xFF5A6F7E)
+                                            )
+                                        )
                                     }
                                 }
                             }

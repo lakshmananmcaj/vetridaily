@@ -246,6 +246,37 @@ class FestivalRepository(private val api: InfoNeedsApi = InfoNeedsApi) {
         }
     }
 
+    /**
+     * What is worth a notification on a given `yyyy-MM-dd`.
+     *
+     * Deliberately narrow: real festivals plus Sashti, and nothing else. Including Pournami,
+     * Amavasai, Ekadasi and Pradosham as well would mean sixty-odd notifications a year, which is
+     * the fastest way to get an app muted or uninstalled. Those days are all still browsable in
+     * the festivals tab; they just do not interrupt anyone.
+     */
+    suspend fun getNotableOn(isoDay: String): Result<List<FestivalOccurrence>> =
+        withContext(Dispatchers.IO) {
+            val month = isoDay.substring(5, 7).toIntOrNull()
+                ?: return@withContext Result.success(emptyList())
+            val year = isoDay.substring(0, 4).toIntOrNull()
+                ?: return@withContext Result.success(emptyList())
+
+            getMonthGrouped(month = month, year = year).map { groups ->
+                groups
+                    .filter { group ->
+                        group.section == FestivalSection.FESTIVAL ||
+                            group.occurrences.any { it.masterId == MONTHLY_SASHTI_MASTER_ID }
+                    }
+                    .flatMap { it.occurrences }
+                    .filter { occurrence ->
+                        occurrence.date?.toIsoDay() == isoDay &&
+                            (occurrence.masterId == MONTHLY_SASHTI_MASTER_ID ||
+                                sectionByMasterId[occurrence.masterId] == FestivalSection.FESTIVAL)
+                    }
+                    .distinctBy { it.festivalId }
+            }
+        }
+
     private fun List<FestivalOccurrence>.upcomingOnly(): List<FestivalOccurrence> {
         val today = todayIso()
         return filter { (it.date?.toIsoDay() ?: "") >= today }
@@ -256,6 +287,9 @@ class FestivalRepository(private val api: InfoNeedsApi = InfoNeedsApi) {
 
     private companion object {
         const val SKANDA_SHASHTI_SLUG = "skanda-shashti-25"
+
+        /** Monthly Sashti. Sits in the vratham section but still earns a notification. */
+        const val MONTHLY_SASHTI_MASTER_ID = 4
 
         /** Enough rows to find a real festival past the muhurat days that crowd the front. */
         const val UPCOMING_SCAN_COUNT = 40
