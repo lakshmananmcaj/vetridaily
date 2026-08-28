@@ -18,6 +18,7 @@ import android.text.TextPaint
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
+import com.murugan.dailycalm.Links
 import com.murugan.dailycalm.R
 import java.io.File
 import java.io.FileOutputStream
@@ -104,8 +105,12 @@ object ShareUtils {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
 
-    private fun caption(title: String): String =
-        "🙏 $title\n\nVetriDaily — தினசரி முருகன் அருள்\n📲 $APP_LINK"
+    private fun caption(title: String): String = buildString {
+        append("🙏 $title\n\n")
+        append("VetriDaily — தினசரி முருகன் அருள்\n")
+        append("📲 $APP_LINK\n")
+        append("▶ ${Links.YOUTUBE_CHANNEL_URL}")
+    }
 
     private fun saveToCache(context: Context, bitmap: Bitmap): Uri? = try {
         val dir = File(context.cacheDir, "shared").apply { mkdirs() }
@@ -222,7 +227,10 @@ object ShareUtils {
             textAlign = Paint.Align.CENTER
         }
         canvas.drawText(FOOTER_BLESSING, W / 2f, H - 210f, foot)
-        canvas.drawText("VetriDaily • Play Store", W / 2f, H - 140f, foot)
+
+        // Every shared card carries the channel. These land in family WhatsApp groups, which is
+        // exactly the audience the channel wants and costs nothing to reach.
+        canvas.drawText("VetriDaily • ${Links.YOUTUBE_HANDLE}", W / 2f, H - 140f, foot)
 
         return bmp
     }

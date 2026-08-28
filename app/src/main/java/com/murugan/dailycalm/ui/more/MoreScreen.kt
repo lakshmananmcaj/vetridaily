@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.murugan.dailycalm.Links
 import com.murugan.dailycalm.data.info.InfoNeedsApi
 
 private val CardBackground = Color(0x1FFFFFFF)
@@ -38,14 +39,7 @@ private val Faint = Color(0x80FFFFFF)
  * installed YouTube app anyway, where the viewer is signed in and the view counts toward watch
  * time, and it still works on a phone without the app.
  */
-private const val YOUTUBE_CHANNEL_ID = "UCrCQJA4nBDpnmE3KXRezt0Q"
-
-/**
- * Addressed by channel id rather than the @handle. Both resolve, but a handle can be renamed by
- * its owner, which would break this link in every installed copy until an update shipped. Channel
- * ids are permanent. The handle is still what the row displays, since that is what people read.
- */
-private const val YOUTUBE_CHANNEL_URL = "https://www.youtube.com/channel/$YOUTUBE_CHANNEL_ID"
+private val YOUTUBE_CHANNEL_URL = Links.YOUTUBE_CHANNEL_URL
 
 private data class MoreLink(
     val tamil: String,
@@ -80,7 +74,7 @@ fun MoreScreen(modifier: Modifier = Modifier) {
                 MoreLink(
                     tamil = "முருகன் பாடல்கள்",
                     english = "Watch on YouTube",
-                    detail = "@murugandevotee",
+                    detail = Links.YOUTUBE_HANDLE,
                     url = YOUTUBE_CHANNEL_URL
                 )
             )
