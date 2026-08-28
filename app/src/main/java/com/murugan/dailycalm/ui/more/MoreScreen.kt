@@ -31,10 +31,18 @@ private val Muted = Color(0xB3FFFFFF)
 private val Faint = Color(0x80FFFFFF)
 
 /**
- * Set this to the channel URL to show the "Watch on YouTube" row.
- * Left blank deliberately — the row stays hidden rather than shipping a guessed link.
+ * The public channel. Not the studio.youtube.com address, which is the creator dashboard and
+ * would send viewers to a page they cannot open.
+ *
+ * Left as an https link rather than a `vnd.youtube:` scheme: Android app-links route it to the
+ * installed YouTube app anyway, where the viewer is signed in and the view counts toward watch
+ * time, and it still works on a phone without the app.
  */
-private const val YOUTUBE_CHANNEL_URL = ""
+private const val YOUTUBE_CHANNEL_URL = "https://www.youtube.com/@murugandevotee"
+
+/** Kept for the video feed in a later phase; the API needs the id, not the handle. */
+@Suppress("unused")
+private const val YOUTUBE_CHANNEL_ID = "UCrCQJA4nBDpnmE3KXRezt0Q"
 
 private data class MoreLink(
     val tamil: String,
@@ -67,9 +75,9 @@ fun MoreScreen(modifier: Modifier = Modifier) {
         if (YOUTUBE_CHANNEL_URL.isNotBlank()) {
             add(
                 MoreLink(
-                    tamil = "யூடியூப்",
+                    tamil = "முருகன் பாடல்கள்",
                     english = "Watch on YouTube",
-                    detail = "Murugan devotional videos",
+                    detail = "@murugandevotee",
                     url = YOUTUBE_CHANNEL_URL
                 )
             )
