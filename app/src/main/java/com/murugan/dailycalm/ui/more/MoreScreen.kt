@@ -38,11 +38,14 @@ private val Faint = Color(0x80FFFFFF)
  * installed YouTube app anyway, where the viewer is signed in and the view counts toward watch
  * time, and it still works on a phone without the app.
  */
-private const val YOUTUBE_CHANNEL_URL = "https://www.youtube.com/@murugandevotee"
-
-/** Kept for the video feed in a later phase; the API needs the id, not the handle. */
-@Suppress("unused")
 private const val YOUTUBE_CHANNEL_ID = "UCrCQJA4nBDpnmE3KXRezt0Q"
+
+/**
+ * Addressed by channel id rather than the @handle. Both resolve, but a handle can be renamed by
+ * its owner, which would break this link in every installed copy until an update shipped. Channel
+ * ids are permanent. The handle is still what the row displays, since that is what people read.
+ */
+private const val YOUTUBE_CHANNEL_URL = "https://www.youtube.com/channel/$YOUTUBE_CHANNEL_ID"
 
 private data class MoreLink(
     val tamil: String,
