@@ -3,6 +3,7 @@ package com.murugan.dailycalm.share
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapShader
 import android.graphics.Canvas
 import android.graphics.LinearGradient
 import android.graphics.Paint
@@ -131,44 +132,79 @@ object ShareUtils {
         }
         canvas.drawRoundRect(RectF(margin, margin, W - margin, H - margin), 40f, 40f, border)
 
-        var y = 170f
+        val side = margin + 70f
+        val textWidth = (W - 2 * side).toInt()
 
-        // Logo, centered near the top.
-        val logo = (ResourcesCompat.getDrawable(context.resources, R.drawable.vetri_daily_logo, null)
-                as? BitmapDrawable)?.bitmap
-        if (logo != null) {
-            val size = 200
-            val scaled = Bitmap.createScaledBitmap(logo, size, size, true)
-            canvas.drawBitmap(scaled, (W - size) / 2f, y, null)
-            y += size + 24f
-        }
-
-        // App name.
         val name = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = 0xFFF7FBFF.toInt()
             textSize = 66f
             textAlign = Paint.Align.CENTER
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         }
-        canvas.drawText("VetriDaily", W / 2f, y + 60f, name)
-        y += 130f
-
-        // Centre block: title (gold) + body (white), both wrapped.
-        val side = margin + 70f
-        val textWidth = (W - 2 * side).toInt()
-
         val titlePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = 0xFFF4B73E.toInt()
             textSize = 74f
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         }
-        y = drawWrapped(canvas, title, titlePaint, side, y + 60f, textWidth)
-
         val bodyPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = 0xFFEAF4FB.toInt()
             textSize = 56f
         }
-        drawWrapped(canvas, body, bodyPaint, side, y + 50f, textWidth)
+
+        // Lay the text out before drawing anything, so the whole block can be centred rather than
+        // stacked from a fixed top — otherwise short content leaves a large void above the footer.
+        val titleLayout = buildLayout(title, titlePaint, textWidth)
+        val bodyLayout = buildLayout(body, bodyPaint, textWidth)
+
+        val logoSize = 220
+        val logoGap = 34f
+        val nameHeight = 78f
+        val nameGap = 56f
+        val titleGap = 46f
+
+        val contentHeight = logoSize + logoGap + nameHeight + nameGap +
+            titleLayout.height + titleGap + bodyLayout.height
+
+        // Keep the block clear of the border at the top and the footer at the bottom.
+        val topLimit = margin + 90f
+        val bottomLimit = H - 300f
+        var y = ((topLimit + bottomLimit - contentHeight) / 2f).coerceAtLeast(topLimit)
+
+        // Logo, masked to a circle. The source is a 1024x1024 square with an opaque white
+        // background, which reads as a white block against the dark card if drawn as-is.
+        val logo = (ResourcesCompat.getDrawable(context.resources, R.drawable.vetri_daily_logo, null)
+                as? BitmapDrawable)?.bitmap
+        if (logo != null) {
+            val scaled = Bitmap.createScaledBitmap(logo, logoSize, logoSize, true)
+            val radius = logoSize / 2f
+            val centerX = W / 2f
+            val centerY = y + radius
+
+            val logoPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                shader = BitmapShader(scaled, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+            }
+            canvas.save()
+            canvas.translate(centerX - radius, y)
+            canvas.drawCircle(radius, radius, radius, logoPaint)
+            canvas.restore()
+
+            // Thin gold ring, so the circle reads as deliberate rather than a cropped square.
+            canvas.drawCircle(
+                centerX, centerY, radius,
+                Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    style = Paint.Style.STROKE
+                    strokeWidth = 4f
+                    color = 0x88F4B73E.toInt()
+                }
+            )
+        }
+        y += logoSize + logoGap
+
+        canvas.drawText("VetriDaily", W / 2f, y + nameHeight - 18f, name)
+        y += nameHeight + nameGap
+
+        y = drawLayout(canvas, titleLayout, side, y) + titleGap
+        drawLayout(canvas, bodyLayout, side, y)
 
         // Footer blessing + brand.
         val foot = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -182,19 +218,15 @@ object ShareUtils {
         return bmp
     }
 
-    /** Draws wrapped, centred text starting at [top]; returns the y just below the block. */
-    private fun drawWrapped(
-        canvas: Canvas,
-        text: String,
-        paint: TextPaint,
-        x: Float,
-        top: Float,
-        width: Int
-    ): Float {
-        val layout = StaticLayout.Builder.obtain(text, 0, text.length, paint, width)
+    /** Wrapped, centred text. Built separately from drawing so the block can be measured first. */
+    private fun buildLayout(text: String, paint: TextPaint, width: Int): StaticLayout =
+        StaticLayout.Builder.obtain(text, 0, text.length, paint, width)
             .setAlignment(Layout.Alignment.ALIGN_CENTER)
             .setLineSpacing(14f, 1f)
             .build()
+
+    /** Draws a prepared layout at [top]; returns the y just below the block. */
+    private fun drawLayout(canvas: Canvas, layout: StaticLayout, x: Float, top: Float): Float {
         canvas.save()
         canvas.translate(x, top)
         layout.draw(canvas)
