@@ -34,9 +34,18 @@ import java.io.FileOutputStream
  */
 object ShareUtils {
 
-    // 🔧 CHANGE ME: while in testing, paste your Play "closed testing opt-in" link here.
-    //    After launch, use the normal store link (the default below already works post-launch).
-    const val APP_LINK = "https://play.google.com/store/apps/details?id=com.murugan.dailycalm"
+    /**
+     * Where a share sends people.
+     *
+     * The app is in closed testing, so the public store page returns 404 — sharing it means every
+     * shared card carries a dead link. This is the closed-test opt-in page instead, which resolves
+     * today. Note it only admits testers whose email is on the list in Play Console; adding people
+     * there is what turns this link into an install.
+     *
+     * 🔧 On production launch, switch to:
+     *    https://play.google.com/store/apps/details?id=com.murugan.dailycalm
+     */
+    const val APP_LINK = "https://play.google.com/apps/testing/com.murugan.dailycalm"
 
     // 🔧 CHANGE ME: Tamil blessing line printed at the bottom of the card.
     private const val FOOTER_BLESSING = "முருகன் அருளுடன்"
