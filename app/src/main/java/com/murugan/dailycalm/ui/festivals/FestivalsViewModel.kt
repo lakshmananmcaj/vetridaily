@@ -20,6 +20,20 @@ class FestivalsViewModel(
     private val _uiState = MutableStateFlow<FestivalsUiState>(FestivalsUiState.Loading)
     val uiState: StateFlow<FestivalsUiState> = _uiState.asStateFlow()
 
+    private val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+
+    /** Opens on the current month, which is what someone checking dates almost always wants. */
+    private val _period = MutableStateFlow(
+        FestivalPeriod(
+            month = Calendar.getInstance().get(Calendar.MONTH) + 1,
+            year = currentYear
+        )
+    )
+    val period: StateFlow<FestivalPeriod> = _period.asStateFlow()
+
+    /** Last year, this year, next year — the same span other Tamil calendars offer. */
+    val years: List<Int> = listOf(currentYear - 1, currentYear, currentYear + 1)
+
     /**
      * Auspicious days start collapsed. They outnumber everything else roughly two to one, so
      * expanding them by default would bury the festivals people opened the tab to find.
@@ -35,6 +49,18 @@ class FestivalsViewModel(
 
     fun retry() = load()
 
+    fun selectMonth(month: Int) {
+        if (month == _period.value.month) return
+        _period.value = _period.value.copy(month = month)
+        load()
+    }
+
+    fun selectYear(year: Int) {
+        if (year == _period.value.year) return
+        _period.value = _period.value.copy(year = year)
+        load()
+    }
+
     fun toggleSection(section: FestivalSection) {
         _expandedSections.value = _expandedSections.value.toMutableSet().apply {
             if (!add(section)) remove(section)
@@ -42,19 +68,17 @@ class FestivalsViewModel(
     }
 
     private fun load() {
-        val year = Calendar.getInstance().get(Calendar.YEAR)
+        val (month, year) = _period.value
         _uiState.value = FestivalsUiState.Loading
 
         viewModelScope.launch {
-            val groups = repository.getYearGrouped(year)
-            groups.fold(
+            repository.getMonthGrouped(month = month, year = year).fold(
                 onSuccess = { sections ->
-                    // Pinned Murugan masters are a nicety; the list is still usable without them.
+                    // Pinned Murugan masters are a nicety; the month is still usable without them.
                     val pinned = repository.getMuruganMasters().getOrDefault(emptyList())
                     _uiState.value = FestivalsUiState.Success(
                         groups = sections,
-                        muruganPinned = pinned,
-                        year = year
+                        muruganPinned = pinned
                     )
                 },
                 onFailure = { error ->

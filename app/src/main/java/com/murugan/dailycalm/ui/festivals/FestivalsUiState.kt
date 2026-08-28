@@ -10,9 +10,14 @@ sealed interface FestivalsUiState {
         /** Sections in display order: festivals, vratham days, then auspicious days. */
         val groups: List<FestivalGroup>,
         /** Skanda Shashti, monthly Shashti and Karthigai, pinned above everything else. */
-        val muruganPinned: List<FestivalMaster>,
-        val year: Int
+        val muruganPinned: List<FestivalMaster>
     ) : FestivalsUiState
 
     data class Error(val message: String) : FestivalsUiState
 }
+
+/** Which month is on screen. Kept apart from [FestivalsUiState] so the tabs stay put while loading. */
+data class FestivalPeriod(
+    val month: Int,
+    val year: Int
+)

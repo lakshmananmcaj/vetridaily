@@ -147,6 +147,48 @@ class FestivalRepository(private val api: InfoNeedsApi = InfoNeedsApi) {
         }
 
     /**
+     * One month, split into the same three sections as [getYearGrouped].
+     *
+     * Preferred over the year view: a month returns around 40 rows instead of 590, and unlike the
+     * year endpoint it includes both `slug` and `festivalMasterID`, so no name-matching is needed
+     * to work out the section or to open a detail page.
+     *
+     * Past dates are kept here — someone browsing a month wants the whole month, including the
+     * days already gone.
+     */
+    suspend fun getMonthGrouped(month: Int, year: Int): Result<List<FestivalGroup>> =
+        withContext(Dispatchers.IO) {
+            val masters = getMasters().getOrNull().orEmpty()
+            val masterByTamilName = masters
+                .filter { !it.nameTamil.isNullOrBlank() }
+                .associateBy { it.nameTamil!!.clean() }
+
+            api.getFestivalsByMonth(month, year).map { occurrences ->
+                val grouped = occurrences
+                    .sortedByDate()
+                    .map { occurrence ->
+                        // Present on this endpoint, but fall back to the name match in case a row
+                        // is missing one.
+                        val master = masterByTamilName[occurrence.nameTamil?.clean().orEmpty()]
+                        occurrence.copy(
+                            slug = occurrence.slug ?: master?.slug,
+                            masterId = occurrence.masterId ?: master?.masterId
+                        )
+                    }
+                    .groupBy { sectionByMasterId[it.masterId] ?: FestivalSection.AUSPICIOUS }
+
+                listOf(
+                    FestivalSection.FESTIVAL,
+                    FestivalSection.VRATHAM,
+                    FestivalSection.AUSPICIOUS
+                ).mapNotNull { section ->
+                    val rows = grouped[section].orEmpty()
+                    if (rows.isEmpty()) null else FestivalGroup(section, rows)
+                }
+            }
+        }
+
+    /**
      * Detail for one festival type, with [FestivalDetail.upcomingDates] filtered to the future.
      * The API returns dates back to 2023 in a field named "upcoming".
      */
