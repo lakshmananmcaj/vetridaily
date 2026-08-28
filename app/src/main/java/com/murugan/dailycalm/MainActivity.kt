@@ -37,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.murugan.dailycalm.ui.festivals.FestivalsScreen
 import com.murugan.dailycalm.ui.main.MainUiState
 import com.murugan.dailycalm.ui.main.MainViewModel
+import com.murugan.dailycalm.ui.main.TodayHighlights
 import com.murugan.dailycalm.ui.more.MoreScreen
 import com.murugan.dailycalm.ui.nav.VetriBottomBar
 import com.murugan.dailycalm.ui.nav.VetriTab
@@ -503,6 +504,10 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 Text("Replay")
                             }
+
+                            // Sits below the day's practice, never above it — Sashti and the next
+                            // festival are the reason to come back, not the reason to be here.
+                            TodayHighlights()
 
                             if (uiState is MainUiState.Success) {
                                 val content = (uiState as MainUiState.Success).content

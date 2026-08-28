@@ -208,6 +208,44 @@ class FestivalRepository(private val api: InfoNeedsApi = InfoNeedsApi) {
         muruganMasterIds.mapNotNull { id -> masters.firstOrNull { it.masterId == id } }
     }
 
+    /**
+     * The next Sashti, for the home-screen countdown.
+     *
+     * Read from `skanda-shashti-25` rather than `shashti-4`: both return the same dates, but only
+     * the former carries the muhurat window, and this app is Murugan-specific anyway.
+     */
+    suspend fun getNextSashti(): Result<FestivalDate?> =
+        getFestival(SKANDA_SHASHTI_SLUG).map { it.upcomingDates?.firstOrNull() }
+
+    /**
+     * The next actual festival, for the home-screen countdown.
+     *
+     * `festivals/upcoming` is dominated by purchase and muhurat days — the next several entries are
+     * routinely Vehicle Purchase and Property Purchase Muhurat — so the result is filtered to the
+     * masters that belong in [FestivalSection.FESTIVAL]. A countdown to a vehicle-purchase window
+     * is not what someone opens a devotional app for.
+     */
+    suspend fun getNextFestival(): Result<FestivalOccurrence?> = withContext(Dispatchers.IO) {
+        val masters = getMasters().getOrNull().orEmpty()
+        val masterByTamilName = masters
+            .filter { !it.nameTamil.isNullOrBlank() }
+            .associateBy { it.nameTamil!!.clean() }
+
+        api.getUpcomingFestivals(count = UPCOMING_SCAN_COUNT).map { occurrences ->
+            occurrences
+                .upcomingOnly()
+                .sortedByDate()
+                .map { occurrence ->
+                    val master = masterByTamilName[occurrence.nameTamil?.clean().orEmpty()]
+                    occurrence.copy(
+                        slug = occurrence.slug ?: master?.slug,
+                        masterId = occurrence.masterId ?: master?.masterId
+                    )
+                }
+                .firstOrNull { sectionByMasterId[it.masterId] == FestivalSection.FESTIVAL }
+        }
+    }
+
     private fun List<FestivalOccurrence>.upcomingOnly(): List<FestivalOccurrence> {
         val today = todayIso()
         return filter { (it.date?.toIsoDay() ?: "") >= today }
@@ -217,6 +255,11 @@ class FestivalRepository(private val api: InfoNeedsApi = InfoNeedsApi) {
         sortedBy { it.date?.toIsoDay() ?: "" }
 
     private companion object {
+        const val SKANDA_SHASHTI_SLUG = "skanda-shashti-25"
+
+        /** Enough rows to find a real festival past the muhurat days that crowd the front. */
+        const val UPCOMING_SCAN_COUNT = 40
+
         /**
          * Dates arrive as `2026-01-01T00:00:00`. Comparing the `yyyy-MM-dd` prefix as a string is
          * correct for ISO dates and avoids `java.time`, which needs core-library desugaring below
