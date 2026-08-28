@@ -87,6 +87,10 @@ data class FestivalDetail(
     @SerializedName("upcomingDates") val upcomingDates: List<FestivalDate>? = null
 )
 
+/**
+ * A temple. The list endpoint returns a subset; `temples/{slug}` fills in the rest —
+ * timings, coordinates, travel info and the Tamil significance text.
+ */
 data class Temple(
     @SerializedName("templeID") val templeId: Int = 0,
     @SerializedName("templeName") val name: String? = null,
@@ -95,10 +99,22 @@ data class Temple(
     @SerializedName("location") val location: String? = null,
     @SerializedName("address") val address: String? = null,
     @SerializedName("city") val city: String? = null,
+    @SerializedName("district") val district: String? = null,
     @SerializedName("state") val state: String? = null,
     @SerializedName("deity") val deity: String? = null,
     @SerializedName("deityTamil") val deityTamil: String? = null,
     @SerializedName("imageURL") val imageUrl: String? = null,
     @SerializedName("templeType") val templeType: String? = null,
-    @SerializedName("views") val views: Int? = null
+    @SerializedName("views") val views: Int? = null,
+
+    // Detail-only fields — null when the temple came from the list endpoint.
+    @SerializedName("description") val description: String? = null,
+    @SerializedName("significance") val significance: String? = null,
+    @SerializedName("significanceTamil") val significanceTamil: String? = null,
+    @SerializedName("openingTime") val openingTime: String? = null,
+    @SerializedName("closingTime") val closingTime: String? = null,
+    @SerializedName("latitude") val latitude: Double? = null,
+    @SerializedName("longitude") val longitude: Double? = null,
+    @SerializedName("nearestRailway") val nearestRailway: String? = null,
+    @SerializedName("nearestAirport") val nearestAirport: String? = null
 )

@@ -25,6 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,11 +45,25 @@ private val Faint = Color(0x80FFFFFF)
 @Composable
 fun TemplesScreen(
     modifier: Modifier = Modifier,
-    viewModel: TemplesViewModel = viewModel(factory = TemplesViewModel.Factory),
-    onTempleClick: (slug: String) -> Unit = {}
+    viewModel: TemplesViewModel = viewModel(factory = TemplesViewModel.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val showAll by viewModel.showAllTemples.collectAsState()
+
+    // Kept here rather than in the ViewModel so the tab's own back stack is one line.
+    // rememberSaveable keeps the open temple across rotation and process death.
+    var selectedSlug by rememberSaveable { mutableStateOf<String?>(null) }
+
+    selectedSlug?.let { slug ->
+        TempleDetailScreen(
+            slug = slug,
+            onBack = { selectedSlug = null },
+            modifier = modifier
+        )
+        return
+    }
+
+    val onTempleClick: (String) -> Unit = { slug -> selectedSlug = slug }
 
     Box(modifier = modifier.fillMaxSize()) {
         when (val state = uiState) {
