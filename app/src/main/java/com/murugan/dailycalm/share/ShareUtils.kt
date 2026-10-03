@@ -46,7 +46,7 @@ object ShareUtils {
      * 🔧 On production launch, switch to:
      *    https://play.google.com/store/apps/details?id=com.murugan.dailycalm
      */
-    const val APP_LINK = "https://play.google.com/apps/testing/com.murugan.dailycalm"
+    const val APP_LINK = "https://play.google.com/store/apps/details?id=com.murugan.dailycalm"
 
     // 🔧 CHANGE ME: Tamil blessing line printed at the bottom of the card.
     private const val FOOTER_BLESSING = "முருகன் அருளுடன்"
