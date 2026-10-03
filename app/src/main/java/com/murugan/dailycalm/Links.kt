@@ -19,6 +19,13 @@ object Links {
     const val PORTAL_URL = "https://informationneeds.com"
 
     /**
+     * The storefront. Physical goods only — vel, vilakku, idols — so checkout stays on the web
+     * with Razorpay and Play Billing does not apply. Selling anything digital through here would
+     * breach Play's payments policy.
+     */
+    const val SHOP_URL = "https://murugandevotee.com"
+
+    /**
      * Festival masters that have a dedicated portal page, keyed by `festivalMasterID`.
      *
      * Someone reading a vehicle-purchase muhurat wants the vehicle-purchase page, not the generic

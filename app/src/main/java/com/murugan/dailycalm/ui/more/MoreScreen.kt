@@ -51,6 +51,8 @@ private data class MoreSection(
 
 private fun portal(path: String) = "${InfoNeedsApi.PORTAL_URL}$path"
 
+private fun shop(path: String) = "${Links.SHOP_URL}$path"
+
 /**
  * Outbound links to the portal and the channel.
  *
@@ -100,6 +102,21 @@ private val SECTIONS = listOf(
                 "Starting a business",
                 portal("/auspicious-dates/business-start")
             )
+        )
+    ),
+    MoreSection(
+        tamil = "பூஜை பொருட்கள்",
+        english = "Pooja items · murugandevotee.com",
+        links = listOf(
+            MoreLink("முருகன் வேல்", "Murugan Vel", shop("/murugan-vel")),
+            MoreLink("விளக்கு", "Vilakku", shop("/vilakku")),
+            MoreLink("முருகன் சிலைகள்", "Murugan idols", shop("/murugan-idols")),
+            MoreLink(
+                "கார் டாஷ்போர்ட் சிலைகள்",
+                "Car dashboard idols",
+                shop("/car-dashboard-idols")
+            ),
+            MoreLink("அனைத்து பொருட்கள்", "All products", shop("/products"))
         )
     ),
     MoreSection(
